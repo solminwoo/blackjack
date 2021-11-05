@@ -39,7 +39,7 @@ public class BlackJackFlow implements IBlackJackFlow {
 		_player.addToHand(_drawHandCardFlow.getCard());
 		_casino.addToHand(_drawHandCardFlow.getCard());
 
-		System.out.println("Dealer's hand: " +_casino.getHand().get(0));
+		System.out.println("Dealer's first hand: " +_casino.getHand().get(0));
 		System.out.println("here's you cards");
 		System.out.println("Your Hand: " + _player.toString());
 		System.out.println("Would you want another card? Y/N");
@@ -64,8 +64,8 @@ public class BlackJackFlow implements IBlackJackFlow {
 		}
 
 		int casinoPoints = _scoreCalculate.sumArrayList(_casino.getHand());
-		System.out.println(_casino.getHand());
-		while (casinoPoints < 17) {
+		System.out.println("Dealers Hand: "+_casino.getHand());
+		while (casinoPoints < 17 && casinoPoints<=playerPoints) {
 			_casino.addToHand(_drawHandCardFlow.getCard());
 			System.out.println("dealer's hand"+_casino.getHand());
 			casinoPoints = _scoreCalculate.sumArrayList(_casino.getHand());
