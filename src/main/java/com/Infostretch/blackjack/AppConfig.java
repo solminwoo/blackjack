@@ -1,5 +1,7 @@
 package com.Infostretch.blackjack;
 
+import java.util.List;
+
 import org.springframework.context.annotation.Bean;
 
 public class AppConfig {
@@ -28,10 +30,32 @@ public class AppConfig {
 	public IHashMapVal createHashMapVal() {
 		return new HashMapVal();
 	}
+	@Bean(name = "IAskForHit")
+	public IAskForHit createAskForHit() {
+		return new AskForHit();
+	}
+	@Bean(name = "IDrawHandCardFlow")
+	public IDrawHandCardFlow createDrawHandCardFlow() {
+		return new DrawHandCardFlow();
+	}
+	
+	@Bean(name = "IHandleHit")
+	public IHandleHit createHandleHit() {
+		return new HandleHit(createAskForHit(),createCalculate(), createDrawHandCardFlow());
+	}
+	
+	@Bean(name = "IHandleDealer")
+	public IHandleDealer createHandleDealer() {
+		return new HandleDealer(createCalculate(),createDrawHandCardFlow());
+	}
+	@Bean(name = "ICompare")
+	public ICompare createCompare() {
+		return new Compare();
+	}
 
 	@Bean(name = "IBlackJackFlow")
 	public IBlackJackFlow createBlackJackFlow() {
 		return new BlackJackFlow(createPlayer(), createPlayer(), createGenerator(), createCalculate(),
-				createConvertor(), createHashMapVal());
+				createConvertor(), createHashMapVal(), createDrawHandCardFlow(),createHandleHit(),createHandleDealer(),createCompare());
 	}
 }

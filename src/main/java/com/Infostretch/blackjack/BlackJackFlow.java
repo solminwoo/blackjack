@@ -13,10 +13,14 @@ public class BlackJackFlow implements IBlackJackFlow {
 	private IDrawHandCardFlow _drawHandCardFlow;
 	private HashMap<Integer, Integer> _deck;
 	private ICalculate _scoreCalculate;
+	private IHandleHit _handleHit;
+	private IHandleDealer _handleDealer;
+	private ICompare _compare;
 
 	public BlackJackFlow(IPlayer _player, IPlayer _casino, IGenerator _generator, ICalculate _calculate,
-			IConvertor _convertor, IHashMapVal _hashMapVal) {
-		super();
+			IConvertor _convertor, IHashMapVal _hashMapVal,IDrawHandCardFlow _drawHandCardFlow, IHandleHit handleHit, IHandleDealer handleDealer,
+			ICompare compare) {
+
 		this._player = _player;
 		this._casino = _casino;
 		this._generator = _generator;
@@ -24,8 +28,11 @@ public class BlackJackFlow implements IBlackJackFlow {
 		this._convertor = _convertor;
 		this._hashMapVal = _hashMapVal;
 		this._deck = _generator.generateDeck();
-		this._drawHandCardFlow = new DrawHandCardFlow(_generator, _hashMapVal, _deck);
-		this._scoreCalculate = new ScoreCalculate(_convertor,_calculate);
+		this._drawHandCardFlow = _drawHandCardFlow;
+		this._scoreCalculate = new ScoreCalculate(_convertor, _calculate);
+		this._handleHit = handleHit;
+		this._handleDealer = handleDealer;
+		this._compare = compare;
 	}
 
 	@Override
@@ -39,50 +46,18 @@ public class BlackJackFlow implements IBlackJackFlow {
 		_player.addToHand(_drawHandCardFlow.getCard());
 		_casino.addToHand(_drawHandCardFlow.getCard());
 
-		System.out.println("Dealer's first hand: " +_casino.getHand().get(0));
+		System.out.println("Dealer's first hand: " + _casino.getHand().get(0));
 		System.out.println("here's you cards");
-		System.out.println("Your Hand: " + _player.toString());
-		System.out.println("Would you want another card? Y/N");
-		String wantMore =  scanner.nextLine();
-		boolean hit = (wantMore.equals("Y") || wantMore.equals("y"));
 		int playerPoints = _scoreCalculate.sumArrayList(_player.getHand());
-		System.out.println("pp"+playerPoints);
-		while (hit) {
-			_player.addToHand(_drawHandCardFlow.getCard());
-			playerPoints = _scoreCalculate.sumArrayList(_player.getHand());
-			System.out.println("Your Hand: " + _player.toString()+"Score: "+playerPoints);
-			if (playerPoints > 21) {
-				return "Busted";
-			}
-			System.out.println("Would you want another card? Y/N");
-			String wantMore2 = scanner.nextLine();
-			if(wantMore2.equals("Y") || wantMore2.equals("y")) {
-				hit = true;
-			} else {
-				hit = false;
-			}
-		}
 
-		int casinoPoints = _scoreCalculate.sumArrayList(_casino.getHand());
-		System.out.println("Dealers Hand: "+_casino.getHand());
-		while (casinoPoints < 17 && casinoPoints<=playerPoints) {
-			_casino.addToHand(_drawHandCardFlow.getCard());
-			System.out.println("dealer's hand"+_casino.getHand());
-			casinoPoints = _scoreCalculate.sumArrayList(_casino.getHand());
+		playerPoints =_handleHit.whenPlayerHit(_player, playerPoints);
+		System.out.println("Your Hand: " + _player.toString() + "Score: " + playerPoints);
+		if(playerPoints>21) {
+			return "Ahh Busted";
 		}
+		int casinoPoints = _handleDealer.drawCardIfBelow17(_casino, playerPoints);
 
-		if (casinoPoints > 21) {
-			return "Dealer is busted! You Won!";
-		}
-
-		String compare = "Your hand: " + playerPoints + " vs Dealer's hand: " + casinoPoints;
-		if (playerPoints > casinoPoints) {
-			return compare + "\nYou Won!";
-		} else if (playerPoints < casinoPoints) {
-			return compare + "\nYouLost :(";
-		} else {
-			return "Draw";
-		}
+		return _compare.withPoints(playerPoints, casinoPoints);
 
 	}
 

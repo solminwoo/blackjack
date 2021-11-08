@@ -3,15 +3,15 @@ package com.Infostretch.blackjack;
 import java.util.HashMap;
 
 public class DrawHandCardFlow implements IDrawHandCardFlow{
-	private IGenerator _G;
-	private IHashMapVal _HMV;
-	private HashMap<Integer,Integer> _deck;
+	private IGenerator _G = new Generator();
+	private IHashMapVal _HMV = new HashMapVal();
+	private HashMap<Integer,Integer> _deck =_G.generateDeck();
 	
-	public DrawHandCardFlow(IGenerator G, IHashMapVal HMV, HashMap deck) {
-		this._G = G;
-		this._HMV = HMV;
-		this._deck = deck;
-	}
+//	public DrawHandCardFlow(IGenerator G, IHashMapVal HMV, HashMap deck) {
+//		this._G = G;
+//		this._HMV = HMV;
+//		this._deck = deck;
+//	}
 
 
 	@Override
